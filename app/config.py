@@ -1,5 +1,5 @@
 """
-BotBuddy Configuration - Multi-Model Edition
+RoboBuddy Configuration - Multi-Model Edition
 
 Now uses local Ollama models by default (100% free).
 Anthropic API is optional fallback.
@@ -11,11 +11,11 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     # App
-    app_name: str = "BotBuddy"
+    app_name: str = "RoboBuddy"
     debug: bool = False
 
     # Database (SQLite - free, local)
-    database_path: str = str(Path.home() / ".botbuddy" / "botbuddy.db")
+    database_path: str = str(Path.home() / ".robobuddy" / "robobuddy.db")
 
     # Ollama (primary - free)
     ollama_url: str = "http://localhost:11434"

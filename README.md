@@ -1,8 +1,8 @@
-# BotBuddy
+# RoboBuddy
 
-**Your AI Helper That Actually Remembers You**
+**Your Smart Assistant That Actually Remembers You**
 
-A personal AI assistant that learns who you are, remembers your conversations, and proactively checks in. Unlike typical chatbots, BotBuddy actually knows you.
+A personal AI assistant that learns who you are, remembers your conversations, and proactively checks in. Unlike typical chatbots, RoboBuddy actually knows you - and it can actually DO things.
 
 ## Features
 
@@ -75,19 +75,20 @@ After:  "Hey Joe! How did that job interview go? And how's Sarah doing?"
 | **preference** | Likes/dislikes | "Loves coffee" |
 | **relationship** | People | "Daughter named Sarah" |
 
-## Why BotBuddy?
+## Why RoboBuddy?
 
-| Feature | ChatGPT | Replika | **BotBuddy** |
+| Feature | ChatGPT | Replika | **RoboBuddy** |
 |---------|---------|---------|--------------|
 | Remembers everything | Forgets | Kinda | Forever |
 | Runs locally/private | Cloud | Cloud | Local |
 | Proactive check-ins | No | No | Yes |
 | Import old AI memories | No | No | **Unique!** |
+| Actually does things | Limited | No | **Yes!** |
 | Cost | $20/mo | $15/mo | **Free** |
 
 ## Data Storage
 
-All data stored locally at `~/.botbuddy/botbuddy.db` (SQLite).
+All data stored locally at `~/.robobuddy/robobuddy.db` (SQLite).
 
 - No cloud
 - No subscriptions
@@ -96,7 +97,7 @@ All data stored locally at `~/.botbuddy/botbuddy.db` (SQLite).
 ## Project Structure
 
 ```
-botbuddy/
+robobuddy/
 ├── app/
 │   ├── main.py              # FastAPI server
 │   ├── config.py            # Settings

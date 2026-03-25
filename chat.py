@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BotBuddy - Terminal Chat Interface
+RoboBuddy - Terminal Chat Interface
 
 100% FREE - Uses local Ollama models
 """
@@ -20,7 +20,7 @@ from app.config import settings
 
 async def main():
     print(f"\n{'='*50}")
-    print(f"  BotBuddy - {settings.companion_name}")
+    print(f"  RoboBuddy - {settings.companion_name}")
     print(f"  Powered by LOCAL models (100% free)")
     print(f"{'='*50}")
 

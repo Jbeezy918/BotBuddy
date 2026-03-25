@@ -1,4 +1,4 @@
-# BotBuddy - Multi-Model Edition (100% Free)
+# RoboBuddy - Multi-Model Edition (100% Free)
 
 # Core
 fastapi==0.109.0

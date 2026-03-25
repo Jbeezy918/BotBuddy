@@ -1,5 +1,5 @@
 #!/bin/bash
-# BotBuddy - One-Click Installer
+# RoboBuddy - One-Click Installer
 
 set -e
 
@@ -9,14 +9,14 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${GREEN}"
-echo "  ____        _   ____            _     _       "
-echo " | __ )  ___ | |_| __ ) _   _  __| | __| |_   _ "
-echo " |  _ \ / _ \| __|  _ \| | | |/ _\` |/ _\` | | | |"
-echo " | |_) | (_) | |_| |_) | |_| | (_| | (_| | |_| |"
-echo " |____/ \___/ \__|____/ \__,_|\__,_|\__,_|\__, |"
-echo "                                          |___/ "
+echo "  ____       _           ____            _     _       "
+echo " |  _ \ ___ | |__   ___ | __ ) _   _  __| | __| |_   _ "
+echo " | |_) / _ \| '_ \ / _ \|  _ \| | | |/ _\` |/ _\` | | | |"
+echo " |  _ < (_) | |_) | (_) | |_) | |_| | (_| | (_| | |_| |"
+echo " |_| \_\___/|_.__/ \___/|____/ \__,_|\__,_|\__,_|\__, |"
+echo "                                                 |___/ "
 echo -e "${NC}"
-echo "Your AI Helper That Actually Remembers You"
+echo "Your Smart Assistant That Actually Remembers You"
 echo ""
 
 # Check Python
@@ -60,7 +60,7 @@ echo -e "${GREEN}✓${NC} Models ready"
 
 echo ""
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}  BotBuddy installed successfully!${NC}"
+echo -e "${GREEN}  RoboBuddy installed successfully!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "To start chatting:"

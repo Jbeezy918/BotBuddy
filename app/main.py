@@ -1,7 +1,7 @@
 """
-BotBuddy - Main FastAPI Application
+RoboBuddy - Main FastAPI Application
 
-Your AI Helper That Actually Remembers You
+Your Smart Assistant That Actually Remembers You
 """
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -20,7 +20,7 @@ scheduler = ProactiveScheduler()
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     # Startup
-    print(f"Starting {settings.companion_name} - BotBuddy...")
+    print(f"Starting {settings.companion_name} - RoboBuddy...")
     scheduler.start()
     yield
     # Shutdown
@@ -29,8 +29,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="BotBuddy",
-    description="Your AI Helper That Actually Remembers You",
+    title="RoboBuddy",
+    description="Your Smart Assistant That Actually Remembers You",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -51,9 +51,9 @@ app.include_router(router, prefix="/api/v1")
 @app.get("/")
 async def root():
     return {
-        "name": "BotBuddy",
+        "name": "RoboBuddy",
         "status": "online",
-        "message": f"Hi! I'm {settings.companion_name}, ready to chat.",
+        "message": f"Hey! I'm {settings.companion_name} - what's on your mind?",
         "version": "1.0.0"
     }
 
