@@ -6,9 +6,50 @@ RoboBuddy - Terminal Chat Interface
 """
 import asyncio
 import sys
+import subprocess
+import platform
+import re
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
+
+# Voice settings
+voice_enabled = True
+VOICE_NAME = "Samantha"  # macOS voice
+VOICE_RATE = 170  # Words per minute
+
+
+def speak(text: str):
+    """Speak text using system TTS"""
+    if not voice_enabled:
+        return
+
+    # Clean text for speech (remove emojis and special chars)
+    clean_text = re.sub(r'[^\w\s\'\",.:;!?-]', '', text)
+
+    try:
+        if platform.system() == "Darwin":  # macOS
+            subprocess.Popen(
+                ["say", "-v", VOICE_NAME, "-r", str(VOICE_RATE), clean_text],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        elif platform.system() == "Windows":
+            # Use PowerShell for Windows TTS
+            ps_script = f'Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Rate = 2; $s.Speak("{clean_text}")'
+            subprocess.Popen(
+                ["powershell", "-Command", ps_script],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        else:  # Linux - try espeak
+            subprocess.Popen(
+                ["espeak", clean_text],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+    except Exception:
+        pass  # Silently fail if TTS not available
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -80,6 +121,7 @@ async def main():
     print(f"    name X   - Rename your buddy")
     print(f"    memories - View stored memories")
     print(f"    models   - List available models")
+    print(f"    voice    - Toggle voice on/off")
     print(f"    feedback - Send us feedback")
     print(f"    privacy  - View/change analytics settings")
     print(f"{'='*50}\n")
@@ -92,8 +134,11 @@ async def main():
     try:
         greeting = await companion.get_greeting(user_id)
         print(f"{settings.companion_name}: {greeting}\n")
+        speak(greeting)
     except Exception as e:
-        print(f"{settings.companion_name}: Hi there! How are you doing?\n")
+        fallback = "Hi there! How are you doing?"
+        print(f"{settings.companion_name}: {fallback}\n")
+        speak(fallback)
 
     while True:
         try:
@@ -103,7 +148,9 @@ async def main():
                 continue
 
             if user_input.lower() == 'quit':
-                print(f"\n{companion.name}: Take care! Talk soon.\n")
+                goodbye = "Take care! Talk soon."
+                print(f"\n{companion.name}: {goodbye}\n")
+                speak(goodbye)
                 break
 
             if user_input.lower().startswith('name '):
@@ -126,6 +173,15 @@ async def main():
                 for m in models:
                     print(f"  {m}")
                 print("---\n")
+                continue
+
+            if user_input.lower() == 'voice':
+                global voice_enabled
+                voice_enabled = not voice_enabled
+                status = "enabled" if voice_enabled else "disabled"
+                print(f"\n  ✓ Voice {status}\n")
+                if voice_enabled:
+                    speak("Voice is now enabled!")
                 continue
 
             if user_input.lower() == 'feedback':
@@ -170,6 +226,7 @@ async def main():
             )
 
             print(f"\n{companion.name}: {response}")
+            speak(response)
 
             if new_memories:
                 print(f"  [+{len(new_memories)} memories saved]")
