@@ -1,5 +1,5 @@
 """
-API Routes - BotBuddy
+API Routes - RoboBuddy
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -9,6 +9,9 @@ from datetime import datetime
 from ..config import settings
 from ..personality.companion import Companion
 from ..memory import MemoryManager
+from ..analytics import Analytics, track_event, FeedbackCollector
+from ..analytics.tracker import EventType, get_analytics
+from ..analytics.feedback import FeedbackType
 
 
 router = APIRouter()
@@ -58,12 +61,19 @@ async def chat(request: ChatRequest):
             detected_mood=request.detected_mood,
             mood_confidence=request.mood_confidence
         )
+
+        # Track anonymous usage (no content, just that chat was used)
+        await track_event(EventType.CHAT_MESSAGE, success=True)
+        if new_memories:
+            await track_event(EventType.MEMORY_CREATED, metadata={"count": len(new_memories)})
+
         return ChatResponse(
             response=response,
             conversation_id=conversation_id,
             memories_created=len(new_memories)
         )
     except Exception as e:
+        await track_event(EventType.ERROR_OCCURRED, success=False, metadata={"error_type": "chat"})
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -182,3 +192,67 @@ async def get_import_stats(user_id: str):
         "total_relationships": len(rels),
         "total_memories": len(facts) + len(prefs) + len(rels)
     }
+
+
+# ==================== ANALYTICS (Anonymous, Opt-in) ====================
+
+@router.get("/analytics/status")
+async def get_analytics_status():
+    """Get current analytics consent status and what we track"""
+    analytics = get_analytics()
+    return analytics.get_consent_status()
+
+
+@router.post("/analytics/opt-in")
+async def analytics_opt_in():
+    """Opt into anonymous analytics"""
+    analytics = get_analytics()
+    analytics.opt_in()
+    await track_event(EventType.APP_STARTED)  # Track first event
+    return {"status": "opted_in", "message": "Thanks! We only track feature usage, never personal data."}
+
+
+@router.post("/analytics/opt-out")
+async def analytics_opt_out():
+    """Opt out of analytics"""
+    analytics = get_analytics()
+    analytics.opt_out()
+    return {"status": "opted_out", "message": "Analytics disabled. No data will be collected."}
+
+
+# ==================== FEEDBACK (Voluntary) ====================
+
+class FeedbackRequest(BaseModel):
+    feedback_type: str  # feature_request, bug_report, general, like, improvement
+    message: str
+    feature_context: Optional[str] = None
+
+
+@router.post("/feedback")
+async def submit_feedback(request: FeedbackRequest):
+    """Submit voluntary feedback"""
+    try:
+        feedback_type = FeedbackType(request.feedback_type)
+    except ValueError:
+        feedback_type = FeedbackType.GENERAL
+
+    collector = FeedbackCollector()
+    success = await collector.submit(
+        feedback_type=feedback_type,
+        message=request.message,
+        feature_context=request.feature_context
+    )
+
+    await track_event(EventType.FEEDBACK_SENT)
+
+    return {
+        "status": "received" if success else "queued",
+        "message": "Thanks for your feedback!"
+    }
+
+
+@router.get("/feedback/pending")
+async def get_pending_feedback():
+    """Check if there's pending feedback that hasn't been sent"""
+    collector = FeedbackCollector()
+    return {"pending_count": collector.get_pending_count()}

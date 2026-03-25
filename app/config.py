@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     evening_checkin_hour: int = 20
     inactivity_hours_before_checkin: int = 24
 
+    # Analytics (anonymous, opt-in only)
+    analytics_endpoint: Optional[str] = None  # Set to your endpoint to collect
+    feedback_endpoint: Optional[str] = None   # Set to your endpoint for feedback
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
