@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # Database (SQLite - free, local)
-    database_path: str = str(Path.home() / ".robobuddy" / "robobuddy.db")
+    # Use /tmp on cloud, ~/.robobuddy locally
+    database_path: str = str(Path("/tmp/robobuddy.db") if Path("/opt/render").exists() else Path.home() / ".robobuddy" / "robobuddy.db")
 
     # Ollama (primary - free)
     ollama_url: str = "http://localhost:11434"
@@ -66,5 +67,10 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Ensure database directory exists
-Path(settings.database_path).parent.mkdir(parents=True, exist_ok=True)
+# Ensure database directory exists (skip for /tmp)
+try:
+    db_parent = Path(settings.database_path).parent
+    if str(db_parent) != "/tmp":
+        db_parent.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass  # Cloud deployments may have restricted filesystem
