@@ -1,8 +1,10 @@
 """
 Companion Brain - Multi-model integration
 
-Uses local Ollama models for 100% free operation.
-Falls back to Anthropic API if configured.
+Priority:
+1. Groq API (free tier - 14,400 req/day, runs Llama 3.1 70B)
+2. Local Ollama models (if available)
+3. Anthropic API (if configured, as paid fallback)
 """
 import httpx
 import json
@@ -24,11 +26,12 @@ class CompanionBrain:
     Smart model router for the companion app.
 
     Priority:
-    1. Local Ollama models (free)
-    2. Anthropic API (if configured, as fallback)
+    1. Groq API (free tier - best for public deployment)
+    2. Local Ollama models (for local development)
+    3. Anthropic API (if configured, as paid fallback)
     """
 
-    # Model assignments
+    # Model assignments for Ollama (local)
     MODELS = {
         "fast": "llama3.2:latest",        # Quick tasks, extraction
         "conversation": "gemma3:12b",      # Main conversation
@@ -36,12 +39,21 @@ class CompanionBrain:
         "reasoning": "deepseek-r1:32b",    # Deep reasoning
     }
 
+    # Groq models (free tier)
+    GROQ_MODELS = {
+        "fast": "llama-3.1-8b-instant",
+        "conversation": "llama-3.1-70b-versatile",
+        "smart": "llama-3.1-70b-versatile",
+    }
+
     FALLBACK_ORDER = ["gemma3:12b", "qwen3:14b", "llama3.2:latest"]
 
     def __init__(self):
         self.ollama_url = "http://localhost:11434"
+        self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
         self.client = httpx.AsyncClient(timeout=120.0)
         self._anthropic = None
+        self._has_groq = bool(settings.groq_api_key)
 
         # Check if Anthropic is available as backup
         if settings.anthropic_api_key:
@@ -59,7 +71,21 @@ class CompanionBrain:
     ) -> str:
         """Main conversation - uses best available model"""
 
-        # Try local models first
+        # Try Groq first (free tier, fast)
+        if self._has_groq:
+            try:
+                result = await self._call_groq(
+                    model=self.GROQ_MODELS["conversation"],
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    temperature=temperature
+                )
+                if result.success:
+                    return result.response
+            except Exception as e:
+                print(f"Groq failed: {e}")
+
+        # Try local Ollama models
         for model in [self.MODELS["conversation"]] + self.FALLBACK_ORDER:
             try:
                 result = await self._call_ollama(
@@ -84,6 +110,21 @@ class CompanionBrain:
         """Quick response for extraction, classification"""
         messages = [{"role": "user", "content": prompt}]
 
+        # Try Groq first (fast model)
+        if self._has_groq:
+            try:
+                result = await self._call_groq(
+                    model=self.GROQ_MODELS["fast"],
+                    messages=messages,
+                    system_prompt=system,
+                    max_tokens=512
+                )
+                if result.success:
+                    return result.response
+            except:
+                pass
+
+        # Try local Ollama
         for model in [self.MODELS["fast"], "llama3.2:latest"]:
             try:
                 result = await self._call_ollama(
@@ -206,6 +247,48 @@ JSON only:"""
         except Exception as e:
             return ModelResult(response="", model=model, success=False)
 
+    async def _call_groq(
+        self,
+        model: str,
+        messages: List[Dict],
+        system_prompt: str = None,
+        temperature: float = 0.7,
+        max_tokens: int = 1024
+    ) -> ModelResult:
+        """Call Groq API (free tier - OpenAI compatible)"""
+        try:
+            # Build messages with system prompt
+            full_messages = []
+            if system_prompt:
+                full_messages.append({"role": "system", "content": system_prompt})
+            full_messages.extend(messages)
+
+            response = await self.client.post(
+                self.groq_url,
+                headers={
+                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": model,
+                    "messages": full_messages,
+                    "temperature": temperature,
+                    "max_tokens": max_tokens
+                }
+            )
+            response.raise_for_status()
+            data = response.json()
+
+            return ModelResult(
+                response=data["choices"][0]["message"]["content"],
+                model=model,
+                success=True
+            )
+
+        except Exception as e:
+            print(f"Groq API error: {e}")
+            return ModelResult(response="", model=model, success=False)
+
     async def _call_anthropic(
         self,
         messages: List[Dict],
@@ -234,6 +317,27 @@ JSON only:"""
             return response.status_code == 200
         except:
             return False
+
+    async def check_groq(self) -> bool:
+        """Check if Groq API is configured and working"""
+        if not self._has_groq:
+            return False
+        try:
+            # Simple models list call to verify API key
+            response = await self.client.get(
+                "https://api.groq.com/openai/v1/models",
+                headers={"Authorization": f"Bearer {settings.groq_api_key}"}
+            )
+            return response.status_code == 200
+        except:
+            return False
+
+    def get_provider_status(self) -> Dict[str, bool]:
+        """Get status of all providers"""
+        return {
+            "groq_configured": self._has_groq,
+            "anthropic_configured": self._anthropic is not None,
+        }
 
     async def list_models(self) -> List[str]:
         """List available Ollama models"""
