@@ -21,10 +21,10 @@ class Settings(BaseSettings):
     # Ollama (primary - free)
     ollama_url: str = "http://localhost:11434"
 
-    # Model assignments (customize these!)
-    model_conversation: str = "gemma3:12b"
-    model_fast: str = "llama3.2:latest"
-    model_smart: str = "qwen3:14b"
+    # Model assignments (renamed to avoid pydantic conflict)
+    llm_conversation: str = "gemma3:12b"
+    llm_fast: str = "llama3.2:latest"
+    llm_smart: str = "qwen3:14b"
 
     # Anthropic API (optional fallback)
     anthropic_api_key: Optional[str] = None
@@ -63,6 +63,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"  # Ignore extra env vars
 
 
 settings = Settings()

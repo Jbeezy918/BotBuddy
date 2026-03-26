@@ -34,6 +34,8 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     # Startup
     print(f"Starting {settings.companion_name} - RoboBuddy...")
+    print(f"[DEBUG] Groq API configured: {bool(settings.groq_api_key)}")
+    print(f"[DEBUG] Anthropic API configured: {bool(settings.anthropic_api_key)}")
     scheduler.start()
     yield
     # Shutdown
