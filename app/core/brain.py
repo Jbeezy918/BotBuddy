@@ -271,6 +271,9 @@ JSON only:"""
                 full_messages.append({"role": "system", "content": system_prompt})
             full_messages.extend(messages)
 
+            # Debug: print request
+            print(f"[Groq] Model: {model}, Messages: {len(full_messages)}")
+
             response = await self.client.post(
                 self.groq_url,
                 headers={
@@ -284,6 +287,12 @@ JSON only:"""
                     "max_tokens": max_tokens
                 }
             )
+
+            # Debug: print response status
+            print(f"[Groq] Response status: {response.status_code}")
+            if response.status_code != 200:
+                print(f"[Groq] Response body: {response.text[:500]}")
+
             response.raise_for_status()
             data = response.json()
 
