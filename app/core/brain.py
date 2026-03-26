@@ -44,11 +44,11 @@ class CompanionBrain:
         "reasoning": "deepseek-r1:32b",    # Deep reasoning
     }
 
-    # Groq models (free tier)
+    # Groq models (free tier) - Updated March 2026
     GROQ_MODELS = {
         "fast": "llama-3.1-8b-instant",
-        "conversation": "llama-3.1-70b-versatile",
-        "smart": "llama-3.1-70b-versatile",
+        "conversation": "llama-3.3-70b-versatile",
+        "smart": "llama-3.3-70b-versatile",
     }
 
     FALLBACK_ORDER = ["gemma3:12b", "qwen3:14b", "llama3.2:latest"]
