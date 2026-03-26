@@ -6,12 +6,17 @@ Priority:
 2. Local Ollama models (if available)
 3. Anthropic API (if configured, as paid fallback)
 """
+import os
 import httpx
 import json
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 
 from ..config import settings
+
+# Direct env var fallback for cloud deployments
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY") or settings.groq_api_key
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY") or settings.anthropic_api_key
 
 
 @dataclass
@@ -53,13 +58,16 @@ class CompanionBrain:
         self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
         self.client = httpx.AsyncClient(timeout=120.0)
         self._anthropic = None
-        self._has_groq = bool(settings.groq_api_key)
+        self._groq_key = GROQ_API_KEY
+        self._has_groq = bool(self._groq_key)
+
+        print(f"[Brain] Groq API configured: {self._has_groq}")
 
         # Check if Anthropic is available as backup
-        if settings.anthropic_api_key:
+        if ANTHROPIC_API_KEY:
             try:
                 import anthropic
-                self._anthropic = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+                self._anthropic = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
             except:
                 pass
 
@@ -266,7 +274,7 @@ JSON only:"""
             response = await self.client.post(
                 self.groq_url,
                 headers={
-                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Authorization": f"Bearer {self._groq_key}",
                     "Content-Type": "application/json"
                 },
                 json={
@@ -326,7 +334,7 @@ JSON only:"""
             # Simple models list call to verify API key
             response = await self.client.get(
                 "https://api.groq.com/openai/v1/models",
-                headers={"Authorization": f"Bearer {settings.groq_api_key}"}
+                headers={"Authorization": f"Bearer {self._groq_key}"}
             )
             return response.status_code == 200
         except:
