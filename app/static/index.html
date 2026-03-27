@@ -13,13 +13,45 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0f;
-            background-image:
-                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(120, 0, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(0, 180, 255, 0.05) 0%, transparent 70%);
+            background: linear-gradient(135deg, #1a0033 0%, #0d001a 25%, #001a1a 50%, #0d1a00 75%, #1a0033 100%);
+            background-size: 400% 400%;
+            animation: gradientWave 15s ease infinite;
             min-height: 100vh;
             color: #f5f5f5;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(255, 0, 128, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 255, 200, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(128, 0, 255, 0.1) 0%, transparent 60%);
+            animation: glowPulse 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientWave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes glowPulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .setup-container, .chat-container {
+            position: relative;
+            z-index: 1;
         }
 
         /* Setup Screen */
@@ -378,10 +410,7 @@
             display: none;
             flex-direction: column;
             height: 100vh;
-            background: #0a0a0f;
-            background-image:
-                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(120, 0, 255, 0.08) 0%, transparent 50%);
+            background: transparent;
         }
 
         .chat-header {
@@ -459,6 +488,161 @@
             padding: 8px 14px;
             border-radius: 8px;
             font-size: 13px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .memory-count:hover {
+            background: rgba(0, 212, 170, 0.35);
+            border-color: #00d4aa;
+        }
+
+        /* Reply Length Toggle */
+        .reply-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .reply-toggle-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+        }
+
+        .reply-toggle-btns {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 2px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .reply-toggle-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .reply-toggle-btn.active {
+            background: linear-gradient(135deg, #ff00aa, #00ffaa);
+            color: #0a0a0f;
+        }
+
+        .reply-toggle-btn:hover:not(.active) {
+            color: #fff;
+        }
+
+        /* Memory Modal */
+        .memory-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .memory-modal.show {
+            display: flex;
+        }
+
+        .memory-modal-content {
+            background: rgba(30, 20, 40, 0.95);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,0,200,0.3);
+            box-shadow: 0 20px 60px rgba(255,0,128,0.2);
+        }
+
+        .memory-modal h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #ff00aa;
+        }
+
+        .memory-item {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00ffaa;
+        }
+
+        .memory-item p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .memory-item .time {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 6px;
+        }
+
+        .memory-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .save-memory-btn {
+            background: linear-gradient(135deg, #ff00aa, #aa00ff);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .save-memory-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(255,0,170,0.4);
+        }
+
+        .memory-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .memory-input:focus {
+            outline: none;
+            border-color: #ff00aa;
         }
 
         .chat-messages {
@@ -718,10 +902,27 @@
         </div>
 
         <div class="chat-input-area">
+            <div class="reply-toggle">
+                <span class="reply-toggle-label">Replies:</span>
+                <div class="reply-toggle-btns">
+                    <button class="reply-toggle-btn active" id="shortBtn" onclick="setReplyLength('short')">Short</button>
+                    <button class="reply-toggle-btn" id="longBtn" onclick="setReplyLength('long')">Detailed</button>
+                </div>
+            </div>
             <div class="input-wrapper">
                 <textarea class="chat-input" id="chatInput" placeholder="Message..." rows="1" onkeydown="handleKey(event)"></textarea>
                 <button class="send-btn" id="sendBtn" onclick="sendMessage()">→</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Memory Modal -->
+    <div class="memory-modal" id="memoryModal" onclick="closeMemoryModal(event)">
+        <div class="memory-modal-content" onclick="event.stopPropagation()">
+            <h3>🧠 Key Memories</h3>
+            <div id="memoryList"></div>
+            <input type="text" class="memory-input" id="newMemoryInput" placeholder="Save a key point from our chat...">
+            <button class="save-memory-btn" onclick="saveMemory()">💾 Save to Memory</button>
         </div>
     </div>
 
@@ -732,6 +933,7 @@
         let voiceOn = true;
         let personality = 'friendly';
         let voice = 'samantha';
+        let replyLength = 'short'; // 'short' or 'long'
 
         // Selection handlers
         document.querySelectorAll('#personalityRow .select-btn').forEach(btn => {
@@ -915,7 +1117,8 @@
                         user_id: user.userId,
                         message: text,
                         conversation_id: convId,
-                        personality: user.personality
+                        personality: user.personality,
+                        reply_length: replyLength
                     })
                 });
                 const d = await r.json();
@@ -949,6 +1152,79 @@
             document.getElementById('chatScreen').style.display = 'none';
             document.getElementById('setupScreen').classList.remove('hidden');
         }
+
+        // Reply length toggle
+        function setReplyLength(len) {
+            replyLength = len;
+            document.getElementById('shortBtn').classList.toggle('active', len === 'short');
+            document.getElementById('longBtn').classList.toggle('active', len === 'long');
+            localStorage.setItem('rb_reply_length', len);
+        }
+
+        // Memory modal functions
+        function openMemoryModal() {
+            document.getElementById('memoryModal').classList.add('show');
+            loadMemoryList();
+        }
+
+        function closeMemoryModal(e) {
+            if (e.target.id === 'memoryModal') {
+                document.getElementById('memoryModal').classList.remove('show');
+            }
+        }
+
+        async function loadMemoryList() {
+            const list = document.getElementById('memoryList');
+            list.innerHTML = '<p style="color: rgba(255,255,255,0.5);">Loading...</p>';
+
+            try {
+                const r = await fetch(`${API}/api/v1/memories/${user.userId}?limit=20`);
+                const memories = await r.json();
+
+                if (memories.length === 0) {
+                    list.innerHTML = '<p style="color: rgba(255,255,255,0.5);">No memories saved yet. Chat more or save key points below!</p>';
+                } else {
+                    list.innerHTML = memories.map(m => `
+                        <div class="memory-item">
+                            <p>${m.content || m.memory || m.text || JSON.stringify(m)}</p>
+                            <div class="time">${m.created_at ? new Date(m.created_at).toLocaleString() : ''}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch {
+                list.innerHTML = '<p style="color: rgba(255,255,255,0.5);">Could not load memories.</p>';
+            }
+        }
+
+        async function saveMemory() {
+            const input = document.getElementById('newMemoryInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            try {
+                await fetch(`${API}/api/v1/memories`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                        content: text,
+                        type: 'manual'
+                    })
+                });
+                input.value = '';
+                loadMemoryList();
+                loadMemories();
+            } catch {
+                alert('Could not save memory');
+            }
+        }
+
+        // Wire up memory count click
+        document.getElementById('memoryCount').onclick = openMemoryModal;
+
+        // Load saved reply length
+        const savedLen = localStorage.getItem('rb_reply_length');
+        if (savedLen) setReplyLength(savedLen);
 
         if (speechSynthesis) {
             speechSynthesis.getVoices();

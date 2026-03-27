@@ -26,7 +26,9 @@ class Companion:
         message: str,
         conversation_id: Optional[str] = None,
         detected_mood: Optional[str] = None,
-        mood_confidence: Optional[float] = None
+        mood_confidence: Optional[float] = None,
+        personality: Optional[str] = "friendly",
+        reply_length: Optional[str] = "short"
     ) -> Tuple[str, str, List[Memory]]:
         """Main chat - returns (response, conversation_id, new_memories)"""
 
@@ -68,6 +70,37 @@ class Companion:
 
         if detected_mood and mood_confidence and mood_confidence > 0.5:
             system_prompt += f"\n\n**Note**: User seems {detected_mood}. Adjust your tone accordingly."
+
+        # Reply length instruction
+        if reply_length == "short":
+            system_prompt += """
+
+**CRITICAL - RESPONSE LENGTH**:
+- Keep responses SHORT: 1-3 sentences MAX
+- Get to the point quickly
+- No rambling or over-explaining
+- Ask at most 1 follow-up question
+- Be conversational, not lecture-y
+"""
+        else:
+            system_prompt += """
+
+**Response Style**:
+- You can give detailed, thorough responses
+- Explain context and reasoning when helpful
+- Feel free to ask multiple follow-up questions
+- Take your time to fully address the topic
+"""
+
+        # Personality adjustment
+        personality_traits = {
+            "friendly": "Be warm, supportive, and casual. Use a friendly tone.",
+            "professional": "Be professional, clear, and efficient. Focus on substance.",
+            "playful": "Be fun, witty, and energetic. Feel free to joke around.",
+            "wise": "Be thoughtful, measured, and insightful. Share perspective."
+        }
+        if personality in personality_traits:
+            system_prompt += f"\n\n**Personality**: {personality_traits[personality]}"
 
         # Get conversation history
         history = await self.memory.get_conversation_history(conversation_id, limit=15)

@@ -27,6 +27,8 @@ class ChatRequest(BaseModel):
     conversation_id: Optional[str] = None
     detected_mood: Optional[str] = None
     mood_confidence: Optional[float] = None
+    personality: Optional[str] = "friendly"
+    reply_length: Optional[str] = "short"  # 'short' or 'long'
 
 
 class ChatResponse(BaseModel):
@@ -59,7 +61,9 @@ async def chat(request: ChatRequest):
             message=request.message,
             conversation_id=request.conversation_id,
             detected_mood=request.detected_mood,
-            mood_confidence=request.mood_confidence
+            mood_confidence=request.mood_confidence,
+            personality=request.personality,
+            reply_length=request.reply_length
         )
 
         # Track anonymous usage (no content, just that chat was used)
@@ -117,6 +121,34 @@ async def search_memories(user_id: str, query: str, limit: int = 10):
     """Search memories"""
     memories = await memory.search_memories(user_id, query, limit)
     return [m.model_dump() for m in memories]
+
+
+class SaveMemoryRequest(BaseModel):
+    user_id: str
+    content: str
+    type: Optional[str] = "fact"
+
+
+@router.post("/memories")
+async def save_memory(request: SaveMemoryRequest):
+    """Manually save a memory/key point"""
+    from ..memory.models import Memory, MemoryType, MemoryImportance
+
+    try:
+        mem_type = MemoryType(request.type) if request.type else MemoryType.FACT
+    except ValueError:
+        mem_type = MemoryType.FACT
+
+    new_memory = Memory(
+        user_id=request.user_id,
+        memory_type=mem_type,
+        content=request.content,
+        importance=MemoryImportance.HIGH,
+        keywords=[],
+        source_message_id="manual"
+    )
+    stored = await memory.store_memory(new_memory)
+    return stored.model_dump()
 
 
 # ==================== CONVERSATIONS ====================
