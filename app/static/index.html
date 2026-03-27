@@ -385,11 +385,19 @@
                     <input type="text" id="username" placeholder="What should I call you?" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email (optional - for account recovery)</label>
-                    <input type="email" id="email" placeholder="your@email.com">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Start Chatting with Sage</button>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" id="authBtn">Create Account</button>
             </form>
+
+            <div class="auth-switch">
+                Already have an account? <a href="#" onclick="toggleAuthMode()">Log In</a>
+            </div>
 
             <div class="features">
                 <div class="feature">
@@ -507,6 +515,37 @@
             }
         }
 
+        let isLoginMode = false;
+
+        // Toggle between login and signup
+        function toggleAuthMode(e) {
+            if (e) e.preventDefault();
+            isLoginMode = !isLoginMode;
+
+            const btn = document.getElementById('authBtn');
+            const switchDiv = document.querySelector('.auth-switch');
+            const nameGroup = document.getElementById('username').parentElement;
+
+            if (isLoginMode) {
+                btn.textContent = 'Log In';
+                switchDiv.innerHTML = 'Need an account? <a href="#" onclick="toggleAuthMode(event)">Sign Up</a>';
+                nameGroup.style.display = 'none';
+            } else {
+                btn.textContent = 'Create Account';
+                switchDiv.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthMode(event)">Log In</a>';
+                nameGroup.style.display = 'block';
+            }
+        }
+
+        // Simple hash for password (client-side - backend should do real hashing)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         // Check if user exists
         function checkAuth() {
             const saved = localStorage.getItem('robobuddy_user');
@@ -522,19 +561,59 @@
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-            if (!username) return;
+            if (!email || !password) return;
 
-            // Create user ID from username
-            const userId = username.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString(36);
+            const passwordHash = await hashPassword(password);
 
-            currentUser = { userId, username, email, createdAt: new Date().toISOString() };
-            localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
+            if (isLoginMode) {
+                // Login - check stored accounts
+                const accounts = JSON.parse(localStorage.getItem('robobuddy_accounts') || '{}');
+                const account = accounts[email];
 
-            // Track signup
-            try {
-                await fetch(`${API_BASE}/api/v1/analytics/opt-in`, { method: 'POST' });
-            } catch (e) {}
+                if (!account || account.passwordHash !== passwordHash) {
+                    alert('Invalid email or password');
+                    return;
+                }
+
+                currentUser = account;
+                localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
+            } else {
+                // Signup - create new account
+                if (!username) {
+                    alert('Please enter your name');
+                    return;
+                }
+
+                // Check if email already exists
+                const accounts = JSON.parse(localStorage.getItem('robobuddy_accounts') || '{}');
+                if (accounts[email]) {
+                    alert('An account with this email already exists. Try logging in.');
+                    return;
+                }
+
+                // Create user ID from email
+                const userId = email.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString(36);
+
+                currentUser = {
+                    userId,
+                    username,
+                    email,
+                    passwordHash,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Store account
+                accounts[email] = currentUser;
+                localStorage.setItem('robobuddy_accounts', JSON.stringify(accounts));
+                localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
+
+                // Track signup
+                try {
+                    await fetch(`${API_BASE}/api/v1/analytics/opt-in`, { method: 'POST' });
+                } catch (e) {}
+            }
 
             showChat();
             loadGreeting();
