@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoboBuddy - Your AI Companion That Remembers You</title>
+    <title>RoboBuddy - Your AI Companion</title>
     <style>
         * {
             margin: 0;
@@ -12,14 +12,14 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             min-height: 100vh;
             color: #fff;
         }
 
-        /* Auth Screen */
-        .auth-container {
+        /* Setup Screen */
+        .setup-container {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,14 +28,15 @@
             padding: 20px;
         }
 
-        .auth-box {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
+        .setup-box {
+            background: rgba(255,255,255,0.08);
+            border-radius: 24px;
             padding: 40px;
             width: 100%;
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 500px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
 
         .logo {
@@ -44,100 +45,133 @@
         }
 
         .logo h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #e94560, #0f3460);
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .logo p {
-            color: #888;
-            font-size: 0.95rem;
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 12px;
+            margin-top: 25px;
         }
 
         .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #aaa;
-            font-size: 0.9rem;
+            margin-bottom: 15px;
         }
 
         .form-group input {
             width: 100%;
             padding: 14px 18px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
             background: rgba(0,0,0,0.3);
             color: #fff;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, background 0.3s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #e94560;
+            border-color: #667eea;
+            background: rgba(0,0,0,0.4);
         }
 
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Personality & Voice Grid */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .option-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-card:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .option-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .option-card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .option-card .label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .option-card .desc {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+        }
+
+        /* Buttons */
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 25px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #e94560, #0f3460);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
         }
 
-        .auth-switch {
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15);
+            box-shadow: none;
+        }
+
+        .or-divider {
             text-align: center;
-            margin-top: 20px;
-            color: #888;
-        }
-
-        .auth-switch a {
-            color: #e94560;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .feature {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .feature-icon {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-
-        .feature-text {
-            font-size: 0.8rem;
-            color: #aaa;
+            color: rgba(255,255,255,0.4);
+            margin: 20px 0;
+            font-size: 0.85rem;
         }
 
         /* Chat Screen */
@@ -152,7 +186,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 15px 20px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
@@ -163,14 +197,14 @@
         }
 
         .avatar {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #e94560, #0f3460);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
 
         .chat-header-info h2 {
@@ -180,12 +214,12 @@
 
         .chat-header-info p {
             font-size: 0.8rem;
-            color: #0f0;
+            color: #4ade80;
         }
 
         .chat-header-right {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
@@ -193,7 +227,7 @@
             background: rgba(255,255,255,0.1);
             border: none;
             padding: 10px 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #fff;
             cursor: pointer;
             font-size: 0.85rem;
@@ -205,10 +239,10 @@
         }
 
         .voice-btn {
-            background: rgba(233, 69, 96, 0.3);
+            background: rgba(102, 126, 234, 0.4);
             border: none;
             padding: 10px 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #fff;
             cursor: pointer;
             font-size: 1rem;
@@ -216,11 +250,15 @@
         }
 
         .voice-btn.active {
-            background: rgba(233, 69, 96, 0.8);
+            background: rgba(102, 126, 234, 0.8);
         }
 
-        .voice-btn:hover {
-            background: rgba(233, 69, 96, 0.6);
+        .memory-badge {
+            background: rgba(102, 126, 234, 0.3);
+            color: #a5b4fc;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
         }
 
         .chat-messages {
@@ -233,9 +271,9 @@
         }
 
         .message {
-            max-width: 80%;
+            max-width: 75%;
             padding: 15px 20px;
-            border-radius: 18px;
+            border-radius: 20px;
             line-height: 1.5;
             animation: fadeIn 0.3s ease;
         }
@@ -246,21 +284,21 @@
         }
 
         .message-user {
-            background: linear-gradient(135deg, #e94560, #0f3460);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             align-self: flex-end;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 6px;
         }
 
         .message-bot {
             background: rgba(255,255,255,0.1);
             align-self: flex-start;
-            border-bottom-left-radius: 5px;
+            border-bottom-left-radius: 6px;
         }
 
         .message-time {
             font-size: 0.7rem;
             color: rgba(255,255,255,0.5);
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .typing-indicator {
@@ -268,14 +306,14 @@
             align-self: flex-start;
             padding: 15px 20px;
             background: rgba(255,255,255,0.1);
-            border-radius: 18px;
+            border-radius: 20px;
         }
 
         .typing-indicator span {
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: #888;
+            background: rgba(255,255,255,0.5);
             border-radius: 50%;
             margin-right: 5px;
             animation: bounce 1.4s infinite;
@@ -291,13 +329,13 @@
 
         .chat-input-container {
             padding: 15px 20px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             border-top: 1px solid rgba(255,255,255,0.1);
         }
 
         .chat-input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             max-width: 900px;
             margin: 0 auto;
         }
@@ -305,9 +343,9 @@
         .chat-input {
             flex: 1;
             padding: 15px 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
             border-radius: 25px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.08);
             color: #fff;
             font-size: 1rem;
             resize: none;
@@ -316,14 +354,14 @@
 
         .chat-input:focus {
             outline: none;
-            border-color: #e94560;
+            border-color: #667eea;
         }
 
         .send-btn {
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #e94560, #0f3460);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             color: #fff;
             cursor: pointer;
@@ -335,32 +373,18 @@
             transform: scale(1.1);
         }
 
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Memory count badge */
-        .memory-badge {
-            background: rgba(233, 69, 96, 0.2);
-            color: #e94560;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
         /* Responsive */
         @media (max-width: 600px) {
-            .auth-box {
+            .setup-box {
                 padding: 25px;
             }
-            .features {
-                grid-template-columns: 1fr;
+            .option-grid {
+                grid-template-columns: 1fr 1fr;
             }
             .message {
-                max-width: 90%;
+                max-width: 85%;
             }
-            .chat-header-right {
+            .chat-header-right .memory-badge {
                 display: none;
             }
         }
@@ -371,52 +395,78 @@
     </style>
 </head>
 <body>
-    <!-- Auth Screen -->
-    <div class="auth-container" id="authScreen">
-        <div class="auth-box">
+    <!-- Setup Screen -->
+    <div class="setup-container" id="setupScreen">
+        <div class="setup-box">
             <div class="logo">
                 <h1>RoboBuddy</h1>
-                <p>Your AI Companion That Actually Remembers You</p>
+                <p>Your AI companion that remembers you</p>
             </div>
 
-            <form id="authForm">
-                <div class="form-group">
-                    <label for="username">Your Name</label>
-                    <input type="text" id="username" placeholder="What should I call you?" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="your@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Create a password" required minlength="6">
-                </div>
-                <button type="submit" class="btn btn-primary" id="authBtn">Create Account</button>
-            </form>
-
-            <div class="auth-switch">
-                Already have an account? <a href="#" onclick="toggleAuthMode()">Log In</a>
+            <div class="section-title">What should I call you?</div>
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Your name (optional)">
             </div>
 
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-icon">🧠</div>
-                    <div class="feature-text">Remembers You</div>
+            <div class="section-title">Choose a personality</div>
+            <div class="option-grid" id="personalityGrid">
+                <div class="option-card selected" data-value="friendly">
+                    <div class="icon">😊</div>
+                    <div class="label">Friendly</div>
+                    <div class="desc">Warm & supportive</div>
                 </div>
-                <div class="feature">
-                    <div class="feature-icon">💰</div>
-                    <div class="feature-text">Smart API Savings</div>
+                <div class="option-card" data-value="professional">
+                    <div class="icon">💼</div>
+                    <div class="label">Professional</div>
+                    <div class="desc">Clear & efficient</div>
                 </div>
-                <div class="feature">
-                    <div class="feature-icon">📥</div>
-                    <div class="feature-text">Import History</div>
+                <div class="option-card" data-value="playful">
+                    <div class="icon">🎮</div>
+                    <div class="label">Playful</div>
+                    <div class="desc">Fun & creative</div>
                 </div>
-                <div class="feature">
-                    <div class="feature-icon">🔒</div>
-                    <div class="feature-text">Private & Secure</div>
+                <div class="option-card" data-value="wise">
+                    <div class="icon">🦉</div>
+                    <div class="label">Wise</div>
+                    <div class="desc">Thoughtful & deep</div>
                 </div>
             </div>
+
+            <div class="section-title">Choose a voice</div>
+            <div class="option-grid" id="voiceGrid">
+                <div class="option-card selected" data-value="samantha">
+                    <div class="icon">🎙️</div>
+                    <div class="label">Samantha</div>
+                    <div class="desc">Warm female</div>
+                </div>
+                <div class="option-card" data-value="alex">
+                    <div class="icon">🎤</div>
+                    <div class="label">Alex</div>
+                    <div class="desc">Neutral</div>
+                </div>
+                <div class="option-card" data-value="daniel">
+                    <div class="icon">📢</div>
+                    <div class="label">Daniel</div>
+                    <div class="desc">British male</div>
+                </div>
+                <div class="option-card" data-value="karen">
+                    <div class="icon">🔊</div>
+                    <div class="label">Karen</div>
+                    <div class="desc">Australian</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="startChat()">Start Chatting →</button>
+
+            <div class="or-divider">— or create an account to sync across devices —</div>
+
+            <div class="form-group">
+                <input type="email" id="email" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password">
+            </div>
+            <button class="btn btn-secondary" onclick="createAccount()">Create Account</button>
         </div>
     </div>
 
@@ -424,22 +474,20 @@
     <div class="chat-container" id="chatScreen">
         <div class="chat-header">
             <div class="chat-header-left">
-                <div class="avatar">🤖</div>
+                <div class="avatar" id="botAvatar">🤖</div>
                 <div class="chat-header-info">
-                    <h2>Sage</h2>
+                    <h2 id="botName">Buddy</h2>
                     <p>● Online</p>
                 </div>
             </div>
             <div class="chat-header-right">
                 <span class="memory-badge" id="memoryCount">0 memories</span>
                 <button class="voice-btn active" id="voiceBtn" onclick="toggleVoice()" title="Toggle voice">🔊</button>
-                <button class="header-btn" onclick="showImport()">📥 Import</button>
-                <button class="header-btn" onclick="logout()">Logout</button>
+                <button class="header-btn" onclick="logout()">← Back</button>
             </div>
         </div>
 
         <div class="chat-messages" id="chatMessages">
-            <!-- Messages appear here -->
         </div>
 
         <div class="typing-indicator" id="typingIndicator">
@@ -461,51 +509,156 @@
     </div>
 
     <script>
-        // Config
         const API_BASE = window.location.origin;
         let currentUser = null;
         let conversationId = null;
         let voiceEnabled = true;
+        let selectedPersonality = 'friendly';
+        let selectedVoice = 'samantha';
+
+        // Personality/Voice card selection
+        document.querySelectorAll('#personalityGrid .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#personalityGrid .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedPersonality = card.dataset.value;
+            });
+        });
+
+        document.querySelectorAll('#voiceGrid .option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#voiceGrid .option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedVoice = card.dataset.value;
+            });
+        });
+
+        // Start chat (no account needed)
+        function startChat() {
+            const username = document.getElementById('username').value.trim() || 'Friend';
+            const visitorId = 'visitor_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5);
+
+            currentUser = {
+                userId: visitorId,
+                username: username,
+                personality: selectedPersonality,
+                voice: selectedVoice,
+                isGuest: true,
+                createdAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
+            showChat();
+            loadGreeting();
+
+            // Track anonymous visit
+            try {
+                fetch(`${API_BASE}/api/v1/analytics/opt-in`, { method: 'POST' });
+            } catch (e) {}
+        }
+
+        // Create account
+        async function createAccount() {
+            const username = document.getElementById('username').value.trim() || 'Friend';
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Please enter email and password to create an account');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            const passwordHash = await hashPassword(password);
+            const accounts = JSON.parse(localStorage.getItem('robobuddy_accounts') || '{}');
+
+            if (accounts[email]) {
+                // Login existing
+                if (accounts[email].passwordHash !== passwordHash) {
+                    alert('Incorrect password');
+                    return;
+                }
+                currentUser = accounts[email];
+                // Update personality/voice if changed
+                currentUser.personality = selectedPersonality;
+                currentUser.voice = selectedVoice;
+            } else {
+                // Create new
+                const userId = email.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString(36);
+                currentUser = {
+                    userId,
+                    username,
+                    email,
+                    passwordHash,
+                    personality: selectedPersonality,
+                    voice: selectedVoice,
+                    isGuest: false,
+                    createdAt: new Date().toISOString()
+                };
+                accounts[email] = currentUser;
+                localStorage.setItem('robobuddy_accounts', JSON.stringify(accounts));
+            }
+
+            localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
+            showChat();
+            loadGreeting();
+        }
+
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
         // Text-to-speech
         function speak(text) {
             if (!voiceEnabled || !window.speechSynthesis) return;
 
-            // Cancel any ongoing speech
             window.speechSynthesis.cancel();
 
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
-            utterance.volume = 1.0;
 
-            // Try to use a nice voice
             const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Microsoft'));
-            if (preferredVoice) utterance.voice = preferredVoice;
+            const voiceMap = {
+                'samantha': 'Samantha',
+                'alex': 'Alex',
+                'daniel': 'Daniel',
+                'karen': 'Karen'
+            };
+            const targetVoice = voiceMap[currentUser?.voice || 'samantha'];
+            const voice = voices.find(v => v.name.includes(targetVoice)) || voices[0];
+            if (voice) utterance.voice = voice;
 
             window.speechSynthesis.speak(utterance);
         }
 
-        // Toggle voice on/off
         function toggleVoice() {
             voiceEnabled = !voiceEnabled;
             const btn = document.getElementById('voiceBtn');
             btn.textContent = voiceEnabled ? '🔊' : '🔇';
             btn.classList.toggle('active', voiceEnabled);
-
-            if (!voiceEnabled) {
-                window.speechSynthesis.cancel();
-            }
-
-            // Save preference
+            if (!voiceEnabled) window.speechSynthesis.cancel();
             localStorage.setItem('robobuddy_voice', voiceEnabled ? 'on' : 'off');
         }
 
-        // Load voice preference
-        function loadVoicePreference() {
-            const saved = localStorage.getItem('robobuddy_voice');
-            if (saved === 'off') {
+        // Check existing session
+        function checkAuth() {
+            const saved = localStorage.getItem('robobuddy_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showChat();
+                loadGreeting();
+            }
+            // Load voice pref
+            if (localStorage.getItem('robobuddy_voice') === 'off') {
                 voiceEnabled = false;
                 const btn = document.getElementById('voiceBtn');
                 if (btn) {
@@ -515,130 +668,40 @@
             }
         }
 
-        let isLoginMode = false;
-
-        // Toggle between login and signup
-        function toggleAuthMode(e) {
-            if (e) e.preventDefault();
-            isLoginMode = !isLoginMode;
-
-            const btn = document.getElementById('authBtn');
-            const switchDiv = document.querySelector('.auth-switch');
-            const nameGroup = document.getElementById('username').parentElement;
-
-            if (isLoginMode) {
-                btn.textContent = 'Log In';
-                switchDiv.innerHTML = 'Need an account? <a href="#" onclick="toggleAuthMode(event)">Sign Up</a>';
-                nameGroup.style.display = 'none';
-            } else {
-                btn.textContent = 'Create Account';
-                switchDiv.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthMode(event)">Log In</a>';
-                nameGroup.style.display = 'block';
-            }
-        }
-
-        // Simple hash for password (client-side - backend should do real hashing)
-        async function hashPassword(password) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Check if user exists
-        function checkAuth() {
-            const saved = localStorage.getItem('robobuddy_user');
-            if (saved) {
-                currentUser = JSON.parse(saved);
-                showChat();
-                loadGreeting();
-            }
-        }
-
-        // Auth form submit
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) return;
-
-            const passwordHash = await hashPassword(password);
-
-            if (isLoginMode) {
-                // Login - check stored accounts
-                const accounts = JSON.parse(localStorage.getItem('robobuddy_accounts') || '{}');
-                const account = accounts[email];
-
-                if (!account || account.passwordHash !== passwordHash) {
-                    alert('Invalid email or password');
-                    return;
-                }
-
-                currentUser = account;
-                localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
-            } else {
-                // Signup - create new account
-                if (!username) {
-                    alert('Please enter your name');
-                    return;
-                }
-
-                // Check if email already exists
-                const accounts = JSON.parse(localStorage.getItem('robobuddy_accounts') || '{}');
-                if (accounts[email]) {
-                    alert('An account with this email already exists. Try logging in.');
-                    return;
-                }
-
-                // Create user ID from email
-                const userId = email.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString(36);
-
-                currentUser = {
-                    userId,
-                    username,
-                    email,
-                    passwordHash,
-                    createdAt: new Date().toISOString()
-                };
-
-                // Store account
-                accounts[email] = currentUser;
-                localStorage.setItem('robobuddy_accounts', JSON.stringify(accounts));
-                localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
-
-                // Track signup
-                try {
-                    await fetch(`${API_BASE}/api/v1/analytics/opt-in`, { method: 'POST' });
-                } catch (e) {}
-            }
-
-            showChat();
-            loadGreeting();
-        });
-
-        // Show chat screen
         function showChat() {
-            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('setupScreen').classList.add('hidden');
             document.getElementById('chatScreen').style.display = 'flex';
             document.getElementById('chatInput').focus();
+
+            // Set avatar based on personality
+            const avatars = { friendly: '😊', professional: '💼', playful: '🎮', wise: '🦉' };
+            document.getElementById('botAvatar').textContent = avatars[currentUser.personality] || '🤖';
+            document.getElementById('botName').textContent = currentUser.username === 'Friend' ? 'Buddy' : `${currentUser.username}'s Buddy`;
+
             loadMemoryCount();
         }
 
-        // Load greeting
         async function loadGreeting() {
             try {
                 const res = await fetch(`${API_BASE}/api/v1/greeting/${currentUser.userId}`);
                 const data = await res.json();
-                addMessage(data.greeting || `Hey ${currentUser.username}! I'm Sage, your AI companion. I'll remember our conversations and learn about you over time. What's on your mind?`, 'bot');
+                addMessage(data.greeting || getPersonalityGreeting(), 'bot');
             } catch (e) {
-                addMessage(`Hey ${currentUser.username}! I'm Sage, your AI companion. What's on your mind?`, 'bot');
+                addMessage(getPersonalityGreeting(), 'bot');
             }
         }
 
-        // Load memory count
+        function getPersonalityGreeting() {
+            const name = currentUser.username || 'there';
+            const greetings = {
+                friendly: `Hey ${name}! 👋 So happy to meet you! I'm your buddy, and I'll remember everything we talk about. What's on your mind today?`,
+                professional: `Hello ${name}. I'm here to assist you efficiently. I'll remember our conversations to serve you better. How can I help?`,
+                playful: `Woohoo! ${name}! 🎉 Let's have some fun! I'm your buddy and I've got a memory like an elephant. What adventure shall we go on?`,
+                wise: `Greetings, ${name}. I am here to share knowledge and remember our journey together. What wisdom do you seek today?`
+            };
+            return greetings[currentUser.personality] || greetings.friendly;
+        }
+
         async function loadMemoryCount() {
             try {
                 const res = await fetch(`${API_BASE}/api/v1/memories/${currentUser.userId}?limit=100`);
@@ -647,7 +710,6 @@
             } catch (e) {}
         }
 
-        // Add message to chat
         function addMessage(text, type) {
             const messages = document.getElementById('chatMessages');
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -659,26 +721,19 @@
             messages.appendChild(msgDiv);
             messages.scrollTop = messages.scrollHeight;
 
-            // Speak bot messages
-            if (type === 'bot') {
-                speak(text);
-            }
+            if (type === 'bot') speak(text);
         }
 
-        // Send message
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
             if (!text) return;
 
-            // Clear input
             input.value = '';
             input.style.height = 'auto';
 
-            // Add user message
             addMessage(text, 'user');
 
-            // Show typing
             const typing = document.getElementById('typingIndicator');
             typing.style.display = 'block';
             document.getElementById('sendBtn').disabled = true;
@@ -690,21 +745,18 @@
                     body: JSON.stringify({
                         user_id: currentUser.userId,
                         message: text,
-                        conversation_id: conversationId
+                        conversation_id: conversationId,
+                        personality: currentUser.personality
                     })
                 });
 
                 const data = await res.json();
                 conversationId = data.conversation_id;
 
-                // Hide typing, add response
                 typing.style.display = 'none';
                 addMessage(data.response, 'bot');
 
-                // Update memory count if new memories
-                if (data.memories_created > 0) {
-                    loadMemoryCount();
-                }
+                if (data.memories_created > 0) loadMemoryCount();
 
             } catch (e) {
                 typing.style.display = 'none';
@@ -715,7 +767,6 @@
             input.focus();
         }
 
-        // Handle enter key
         function handleKeyDown(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -723,30 +774,21 @@
             }
         }
 
-        // Auto-resize textarea
         document.getElementById('chatInput').addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
-        // Logout
         function logout() {
             localStorage.removeItem('robobuddy_user');
             currentUser = null;
             conversationId = null;
             document.getElementById('chatMessages').innerHTML = '';
             document.getElementById('chatScreen').style.display = 'none';
-            document.getElementById('authScreen').classList.remove('hidden');
-        }
-
-        // Show import modal (placeholder)
-        function showImport() {
-            alert('Import feature coming soon! You\'ll be able to import your ChatGPT and Claude conversations.');
+            document.getElementById('setupScreen').classList.remove('hidden');
         }
 
         // Init
-        loadVoicePreference();
-        // Load voices (needed for some browsers)
         if (window.speechSynthesis) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
