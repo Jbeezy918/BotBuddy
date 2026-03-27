@@ -26,3 +26,9 @@ anthropic==0.18.1
 
 # Optional - SMS (uncomment if needed)
 # twilio==8.13.0
+
+# Database
+supabase==2.3.0
+
+# Cloud LLM
+groq==0.4.2

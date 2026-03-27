@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     # Groq API (free tier - 14,400 requests/day)
     groq_api_key: Optional[str] = None
 
+    # Supabase (cloud database)
+    supabase_url: Optional[str] = None
+    supabase_key: Optional[str] = None
+
     # Optional - Voice
     elevenlabs_api_key: Optional[str] = None
     assemblyai_api_key: Optional[str] = None

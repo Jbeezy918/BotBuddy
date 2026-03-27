@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+import hashlib
 
 from ..config import settings
 from ..personality.companion import Companion
@@ -13,6 +14,13 @@ from ..analytics import Analytics, track_event, FeedbackCollector
 from ..analytics.tracker import EventType, get_analytics
 from ..analytics.feedback import FeedbackType
 
+# Supabase client (if configured)
+try:
+    from ..db import supabase_client as db
+    USE_SUPABASE = bool(settings.supabase_url and settings.supabase_key)
+except ImportError:
+    USE_SUPABASE = False
+    db = None
 
 router = APIRouter()
 companion = Companion()
@@ -48,6 +56,88 @@ class UserUpdateRequest(BaseModel):
 
 class CompanionSettingsRequest(BaseModel):
     name: Optional[str] = None
+
+
+# ==================== AUTH ====================
+
+class RegisterRequest(BaseModel):
+    user_id: str
+    username: str
+    email: Optional[str] = None
+    password: Optional[str] = None
+    buddy_name: str = "Buddy"
+    personality: str = "friendly"
+    voice: str = "samantha"
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+def hash_password(password: str) -> str:
+    """Simple SHA256 hash for password"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+@router.post("/auth/register")
+async def register_user(request: RegisterRequest):
+    """Register a new user (or update existing guest to full account)"""
+    if not USE_SUPABASE:
+        # Fallback to local storage - just return success
+        return {"success": True, "user_id": request.user_id, "message": "Guest mode (no database)"}
+
+    try:
+        password_hash = hash_password(request.password) if request.password else None
+
+        user = await db.get_or_create_user(
+            user_id=request.user_id,
+            username=request.username,
+            email=request.email,
+            password_hash=password_hash,
+            buddy_name=request.buddy_name,
+            personality=request.personality,
+            voice=request.voice
+        )
+
+        return {
+            "success": True,
+            "user_id": user.get("user_id"),
+            "username": user.get("username"),
+            "buddy_name": user.get("buddy_name"),
+            "personality": user.get("personality"),
+            "voice": user.get("voice")
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/auth/login")
+async def login_user(request: LoginRequest):
+    """Login with email and password"""
+    if not USE_SUPABASE:
+        raise HTTPException(status_code=400, detail="Database not configured")
+
+    try:
+        user = await db.get_user_by_email(request.email)
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+
+        if user.get("password_hash") != hash_password(request.password):
+            raise HTTPException(status_code=401, detail="Invalid password")
+
+        return {
+            "success": True,
+            "user_id": user.get("user_id"),
+            "username": user.get("username"),
+            "buddy_name": user.get("buddy_name"),
+            "personality": user.get("personality"),
+            "voice": user.get("voice")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ==================== CHAT ====================
@@ -288,3 +378,30 @@ async def get_pending_feedback():
     """Check if there's pending feedback that hasn't been sent"""
     collector = FeedbackCollector()
     return {"pending_count": collector.get_pending_count()}
+
+
+# ==================== DASHBOARD (Admin) ====================
+
+@router.get("/dashboard/stats")
+async def get_dashboard_stats():
+    """Get analytics dashboard data"""
+    if not USE_SUPABASE:
+        return {
+            "total_users": 0,
+            "total_memories": 0,
+            "total_messages": 0,
+            "daily_stats": [],
+            "message": "Database not configured - using local storage"
+        }
+
+    try:
+        stats = await db.get_analytics_dashboard()
+        return stats
+    except Exception as e:
+        return {
+            "total_users": 0,
+            "total_memories": 0,
+            "total_messages": 0,
+            "daily_stats": [],
+            "error": str(e)
+        }

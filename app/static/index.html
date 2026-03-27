@@ -952,11 +952,13 @@
             };
         });
 
-        function startChat() {
+        async function startChat() {
             const name = document.getElementById('username').value.trim() || 'Friend';
             const buddyName = document.getElementById('buddyName').value.trim() || 'Buddy';
+            const userId = 'v_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4);
+
             user = {
-                userId: 'v_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4),
+                userId: userId,
                 username: name,
                 buddyName: buddyName,
                 personality: personality,
@@ -964,6 +966,20 @@
                 guest: true,
                 created: new Date().toISOString()
             };
+
+            // Register with server (non-blocking)
+            fetch(`${API}/api/v1/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    username: name,
+                    buddy_name: buddyName,
+                    personality: personality,
+                    voice: voice
+                })
+            }).catch(() => {});
+
             localStorage.setItem('rb_user', JSON.stringify(user));
             showChat();
             greet();
@@ -979,34 +995,92 @@
             if (!email || !pass) { alert('Enter email and password'); return; }
             if (pass.length < 6) { alert('Password: 6+ characters'); return; }
 
-            const hash = await hashPw(pass);
-            const accounts = JSON.parse(localStorage.getItem('rb_accounts') || '{}');
+            // Try server-side auth first
+            try {
+                // Try login first
+                let r = await fetch(`${API}/api/v1/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pass })
+                });
 
-            if (accounts[email]) {
-                if (accounts[email].hash !== hash) { alert('Wrong password'); return; }
-                user = accounts[email];
-                user.personality = personality;
-                user.voice = voice;
-                user.buddyName = buddyName;
-            } else {
-                user = {
-                    userId: email.replace(/[^a-z0-9]/gi, '_') + '_' + Date.now().toString(36),
-                    username: name,
-                    buddyName: buddyName,
-                    email: email,
-                    hash: hash,
-                    personality: personality,
-                    voice: voice,
-                    guest: false,
-                    created: new Date().toISOString()
-                };
-                accounts[email] = user;
-                localStorage.setItem('rb_accounts', JSON.stringify(accounts));
+                if (r.ok) {
+                    const data = await r.json();
+                    user = {
+                        userId: data.user_id,
+                        username: data.username,
+                        buddyName: data.buddy_name || buddyName,
+                        email: email,
+                        personality: data.personality || personality,
+                        voice: data.voice || voice,
+                        guest: false
+                    };
+                } else if (r.status === 401) {
+                    // User not found or wrong password - try to register
+                    const userId = email.replace(/[^a-z0-9]/gi, '_') + '_' + Date.now().toString(36);
+                    r = await fetch(`${API}/api/v1/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userId,
+                            username: name,
+                            email: email,
+                            password: pass,
+                            buddy_name: buddyName,
+                            personality: personality,
+                            voice: voice
+                        })
+                    });
+
+                    if (!r.ok) {
+                        const err = await r.json();
+                        alert(err.detail || 'Registration failed');
+                        return;
+                    }
+
+                    const data = await r.json();
+                    user = {
+                        userId: data.user_id,
+                        username: data.username || name,
+                        buddyName: data.buddy_name || buddyName,
+                        email: email,
+                        personality: data.personality || personality,
+                        voice: data.voice || voice,
+                        guest: false
+                    };
+                }
+
+                localStorage.setItem('rb_user', JSON.stringify(user));
+                showChat();
+                greet();
+            } catch (err) {
+                // Fallback to localStorage if server is down
+                console.log('Server auth failed, using localStorage:', err);
+                const hash = await hashPw(pass);
+                const accounts = JSON.parse(localStorage.getItem('rb_accounts') || '{}');
+
+                if (accounts[email]) {
+                    if (accounts[email].hash !== hash) { alert('Wrong password'); return; }
+                    user = accounts[email];
+                } else {
+                    user = {
+                        userId: email.replace(/[^a-z0-9]/gi, '_') + '_' + Date.now().toString(36),
+                        username: name,
+                        buddyName: buddyName,
+                        email: email,
+                        hash: hash,
+                        personality: personality,
+                        voice: voice,
+                        guest: false
+                    };
+                    accounts[email] = user;
+                    localStorage.setItem('rb_accounts', JSON.stringify(accounts));
+                }
+
+                localStorage.setItem('rb_user', JSON.stringify(user));
+                showChat();
+                greet();
             }
-
-            localStorage.setItem('rb_user', JSON.stringify(user));
-            showChat();
-            greet();
         }
 
         async function hashPw(p) {
