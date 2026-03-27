@@ -43,6 +43,102 @@
             margin-bottom: 40px;
         }
 
+        .mascot {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .mascot-head {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #22c55e, #10b981, #059669);
+            background-size: 200% 200%;
+            animation: colorShift 4s ease infinite;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+        }
+
+        @keyframes colorShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .mascot-eyes {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+        }
+
+        .eye {
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            position: relative;
+            animation: blink 3s infinite;
+        }
+
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        .mascot-mouth {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 4px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 2px;
+        }
+
+        .mascot-antenna {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 12px;
+            background: #22c55e;
+        }
+
+        .mascot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
         .logo h1 {
             font-size: 32px;
             font-weight: 700;
@@ -409,6 +505,16 @@
     <div class="setup-container" id="setupScreen">
         <div class="setup-box">
             <div class="logo">
+                <div class="mascot">
+                    <div class="mascot-antenna"></div>
+                    <div class="mascot-head">
+                        <div class="mascot-eyes">
+                            <div class="eye"></div>
+                            <div class="eye"></div>
+                        </div>
+                        <div class="mascot-mouth"></div>
+                    </div>
+                </div>
                 <h1>RoboBuddy</h1>
                 <p>AI that remembers you</p>
             </div>
