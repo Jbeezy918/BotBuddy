@@ -11,7 +11,8 @@ from collections import defaultdict
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config import settings
 from .api.routes import router
@@ -65,8 +66,8 @@ async def access_control_middleware(request: Request, call_next):
     """Kill switch, paywall, and rate limiting middleware"""
     path = request.url.path
 
-    # Always allow health checks and admin endpoints
-    if path in ["/", "/health", "/admin/status", "/admin/toggle", "/admin/analytics"]:
+    # Always allow health checks, admin endpoints, and frontend
+    if path in ["/", "/app", "/health", "/admin/status", "/admin/toggle", "/admin/analytics", "/api"]:
         return await call_next(request)
 
     # Kill switch - service disabled
@@ -132,14 +133,47 @@ async def access_control_middleware(request: Request, call_next):
 # Include API routes
 app.include_router(router, prefix="/api/v1")
 
+# Static files directory
+STATIC_DIR = Path(__file__).parent / "static"
+
 
 @app.get("/")
 async def root():
+    """Serve the chat frontend"""
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file, media_type="text/html")
     return {
         "name": "RoboBuddy",
         "status": "online",
         "message": f"Hey! I'm {settings.companion_name} - what's on your mind?",
         "version": "1.0.0"
+    }
+
+
+@app.get("/app")
+async def app_page():
+    """Serve the chat frontend at /app"""
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Frontend not found")
+
+
+@app.get("/api")
+async def api_info():
+    """API information endpoint"""
+    return {
+        "name": "RoboBuddy",
+        "status": "online",
+        "message": f"Hey! I'm {settings.companion_name} - what's on your mind?",
+        "version": "1.0.0",
+        "endpoints": {
+            "chat": "/api/v1/chat",
+            "memories": "/api/v1/memories/{user_id}",
+            "greeting": "/api/v1/greeting/{user_id}",
+            "health": "/health"
+        }
     }
 
 

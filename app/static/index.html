@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoboBuddy - Your AI Companion That Remembers You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-box {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            color: #fff;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+
+        .auth-switch a {
+            color: #e94560;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .feature {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Chat Screen */
+        .chat-container {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .chat-header-info h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .chat-header-info p {
+            font-size: 0.8rem;
+            color: #0f0;
+        }
+
+        .chat-header-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-user {
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-bot {
+            background: rgba(255,255,255,0.1);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 18px;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #888;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .chat-input-container {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 1rem;
+            resize: none;
+            max-height: 120px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Memory count badge */
+        .memory-badge {
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .auth-box {
+                padding: 25px;
+            }
+            .features {
+                grid-template-columns: 1fr;
+            }
+            .message {
+                max-width: 90%;
+            }
+            .chat-header-right {
+                display: none;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div class="auth-container" id="authScreen">
+        <div class="auth-box">
+            <div class="logo">
+                <h1>RoboBuddy</h1>
+                <p>Your AI Companion That Actually Remembers You</p>
+            </div>
+
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="username">Your Name</label>
+                    <input type="text" id="username" placeholder="What should I call you?" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email (optional - for account recovery)</label>
+                    <input type="email" id="email" placeholder="your@email.com">
+                </div>
+                <button type="submit" class="btn btn-primary">Start Chatting with Sage</button>
+            </form>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-text">Remembers You</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-text">Smart API Savings</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📥</div>
+                    <div class="feature-text">Import History</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-text">Private & Secure</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div class="chat-container" id="chatScreen">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="avatar">🤖</div>
+                <div class="chat-header-info">
+                    <h2>Sage</h2>
+                    <p>● Online</p>
+                </div>
+            </div>
+            <div class="chat-header-right">
+                <span class="memory-badge" id="memoryCount">0 memories</span>
+                <button class="header-btn" onclick="showImport()">📥 Import</button>
+                <button class="header-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages appear here -->
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <textarea
+                    class="chat-input"
+                    id="chatInput"
+                    placeholder="Type a message..."
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                ></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Config
+        const API_BASE = window.location.origin;
+        let currentUser = null;
+        let conversationId = null;
+
+        // Check if user exists
+        function checkAuth() {
+            const saved = localStorage.getItem('robobuddy_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showChat();
+                loadGreeting();
+            }
+        }
+
+        // Auth form submit
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if (!username) return;
+
+            // Create user ID from username
+            const userId = username.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString(36);
+
+            currentUser = { userId, username, email, createdAt: new Date().toISOString() };
+            localStorage.setItem('robobuddy_user', JSON.stringify(currentUser));
+
+            // Track signup
+            try {
+                await fetch(`${API_BASE}/api/v1/analytics/opt-in`, { method: 'POST' });
+            } catch (e) {}
+
+            showChat();
+            loadGreeting();
+        });
+
+        // Show chat screen
+        function showChat() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('chatScreen').style.display = 'flex';
+            document.getElementById('chatInput').focus();
+            loadMemoryCount();
+        }
+
+        // Load greeting
+        async function loadGreeting() {
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/greeting/${currentUser.userId}`);
+                const data = await res.json();
+                addMessage(data.greeting || `Hey ${currentUser.username}! I'm Sage, your AI companion. I'll remember our conversations and learn about you over time. What's on your mind?`, 'bot');
+            } catch (e) {
+                addMessage(`Hey ${currentUser.username}! I'm Sage, your AI companion. What's on your mind?`, 'bot');
+            }
+        }
+
+        // Load memory count
+        async function loadMemoryCount() {
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/memories/${currentUser.userId}?limit=100`);
+                const memories = await res.json();
+                document.getElementById('memoryCount').textContent = `${memories.length} memories`;
+            } catch (e) {}
+        }
+
+        // Add message to chat
+        function addMessage(text, type) {
+            const messages = document.getElementById('chatMessages');
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message message-${type}`;
+            msgDiv.innerHTML = `${text}<div class="message-time">${time}</div>`;
+
+            messages.appendChild(msgDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Clear input
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Add user message
+            addMessage(text, 'user');
+
+            // Show typing
+            const typing = document.getElementById('typingIndicator');
+            typing.style.display = 'block';
+            document.getElementById('sendBtn').disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: currentUser.userId,
+                        message: text,
+                        conversation_id: conversationId
+                    })
+                });
+
+                const data = await res.json();
+                conversationId = data.conversation_id;
+
+                // Hide typing, add response
+                typing.style.display = 'none';
+                addMessage(data.response, 'bot');
+
+                // Update memory count if new memories
+                if (data.memories_created > 0) {
+                    loadMemoryCount();
+                }
+
+            } catch (e) {
+                typing.style.display = 'none';
+                addMessage("Sorry, I'm having trouble connecting. Please try again.", 'bot');
+            }
+
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+
+        // Handle enter key
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('robobuddy_user');
+            currentUser = null;
+            conversationId = null;
+            document.getElementById('chatMessages').innerHTML = '';
+            document.getElementById('chatScreen').style.display = 'none';
+            document.getElementById('authScreen').classList.remove('hidden');
+        }
+
+        // Show import modal (placeholder)
+        function showImport() {
+            alert('Import feature coming soon! You\'ll be able to import your ChatGPT and Claude conversations.');
+        }
+
+        // Init
+        checkAuth();
+    </script>
+</body>
+</html>
