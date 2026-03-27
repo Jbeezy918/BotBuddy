@@ -13,9 +13,9 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0d0d0d;
+            background: #f8f9fa;
             min-height: 100vh;
-            color: #f5f5f5;
+            color: #1a1a1a;
         }
 
         /* Setup Screen */
@@ -29,12 +29,13 @@
         }
 
         .setup-box {
-            background: #1a1a1a;
+            background: #ffffff;
             border-radius: 16px;
             padding: 48px;
             width: 100%;
             max-width: 440px;
-            border: 1px solid #2a2a2a;
+            border: 1px solid #e5e5e5;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         .logo {
@@ -45,12 +46,12 @@
         .logo h1 {
             font-size: 32px;
             font-weight: 700;
-            color: #fff;
+            color: #1a1a1a;
             letter-spacing: -0.5px;
         }
 
         .logo p {
-            color: #666;
+            color: #888;
             font-size: 15px;
             margin-top: 8px;
         }
@@ -71,21 +72,21 @@
         .form-group input {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid #333;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            background: #0d0d0d;
-            color: #fff;
+            background: #f8f9fa;
+            color: #1a1a1a;
             font-size: 15px;
             transition: border-color 0.2s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #ff6b4a;
+            border-color: #22c55e;
         }
 
         .form-group input::placeholder {
-            color: #555;
+            color: #999;
         }
 
         /* Selection Grid */
@@ -97,8 +98,8 @@
 
         .select-btn {
             flex: 1;
-            background: #0d0d0d;
-            border: 1px solid #333;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
             border-radius: 8px;
             padding: 12px 8px;
             text-align: center;
@@ -107,12 +108,12 @@
         }
 
         .select-btn:hover {
-            border-color: #555;
+            border-color: #bbb;
         }
 
         .select-btn.selected {
-            border-color: #ff6b4a;
-            background: rgba(255, 107, 74, 0.08);
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
         }
 
         .select-btn .emoji {
@@ -122,11 +123,11 @@
 
         .select-btn .name {
             font-size: 12px;
-            color: #999;
+            color: #666;
         }
 
         .select-btn.selected .name {
-            color: #ff6b4a;
+            color: #16a34a;
         }
 
         /* Buttons */
@@ -138,19 +139,19 @@
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            background: #ff6b4a;
+            background: #22c55e;
             color: #fff;
             transition: background 0.2s;
             margin-top: 8px;
         }
 
         .btn-start:hover {
-            background: #ff5533;
+            background: #16a34a;
         }
 
         .divider {
             text-align: center;
-            color: #444;
+            color: #999;
             font-size: 13px;
             margin: 28px 0;
             position: relative;
@@ -162,7 +163,7 @@
             top: 50%;
             width: 35%;
             height: 1px;
-            background: #333;
+            background: #ddd;
         }
 
         .divider::before { left: 0; }
@@ -171,19 +172,19 @@
         .btn-account {
             width: 100%;
             padding: 14px;
-            border: 1px solid #333;
+            border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             background: transparent;
-            color: #888;
+            color: #666;
             transition: all 0.2s;
         }
 
         .btn-account:hover {
-            border-color: #555;
-            color: #fff;
+            border-color: #22c55e;
+            color: #22c55e;
         }
 
         /* Chat Screen */
@@ -191,7 +192,7 @@
             display: none;
             flex-direction: column;
             height: 100vh;
-            background: #0d0d0d;
+            background: #f8f9fa;
         }
 
         .chat-header {
@@ -199,8 +200,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 24px;
-            background: #1a1a1a;
-            border-bottom: 1px solid #2a2a2a;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e5e5;
         }
 
         .chat-header-left {
@@ -213,7 +214,7 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: #2a2a2a;
+            background: #22c55e;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -223,12 +224,12 @@
         .chat-header-info h2 {
             font-size: 16px;
             font-weight: 600;
-            color: #fff;
+            color: #1a1a1a;
         }
 
         .chat-header-info p {
             font-size: 12px;
-            color: #4ade80;
+            color: #22c55e;
         }
 
         .chat-header-right {
@@ -238,12 +239,12 @@
         }
 
         .icon-btn {
-            background: #2a2a2a;
+            background: #f0f0f0;
             border: none;
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            color: #888;
+            color: #666;
             cursor: pointer;
             font-size: 18px;
             transition: all 0.2s;
@@ -253,18 +254,18 @@
         }
 
         .icon-btn:hover {
-            background: #333;
-            color: #fff;
+            background: #e5e5e5;
+            color: #1a1a1a;
         }
 
         .icon-btn.active {
-            background: #ff6b4a;
+            background: #22c55e;
             color: #fff;
         }
 
         .memory-count {
-            background: #2a2a2a;
-            color: #888;
+            background: #e8f5e9;
+            color: #16a34a;
             padding: 8px 14px;
             border-radius: 8px;
             font-size: 13px;
@@ -294,22 +295,23 @@
         }
 
         .message-user {
-            background: #ff6b4a;
+            background: #22c55e;
             color: #fff;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
 
         .message-bot {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            color: #1a1a1a;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
 
         .message-time {
             font-size: 11px;
-            color: rgba(255,255,255,0.4);
+            color: rgba(0,0,0,0.4);
             margin-top: 6px;
         }
 
@@ -317,8 +319,8 @@
             display: none;
             align-self: flex-start;
             padding: 16px 20px;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
             border-radius: 16px;
         }
 
@@ -326,7 +328,7 @@
             display: inline-block;
             width: 6px;
             height: 6px;
-            background: #555;
+            background: #22c55e;
             border-radius: 50%;
             margin-right: 4px;
             animation: pulse 1.2s infinite;
@@ -342,8 +344,8 @@
 
         .chat-input-area {
             padding: 16px 24px;
-            background: #1a1a1a;
-            border-top: 1px solid #2a2a2a;
+            background: #ffffff;
+            border-top: 1px solid #e5e5e5;
         }
 
         .input-wrapper {
@@ -356,10 +358,10 @@
         .chat-input {
             flex: 1;
             padding: 14px 18px;
-            border: 1px solid #333;
+            border: 1px solid #ddd;
             border-radius: 12px;
-            background: #0d0d0d;
-            color: #fff;
+            background: #f8f9fa;
+            color: #1a1a1a;
             font-size: 15px;
             resize: none;
             max-height: 100px;
@@ -367,14 +369,14 @@
 
         .chat-input:focus {
             outline: none;
-            border-color: #ff6b4a;
+            border-color: #22c55e;
         }
 
         .send-btn {
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            background: #ff6b4a;
+            background: #22c55e;
             border: none;
             color: #fff;
             cursor: pointer;
@@ -383,7 +385,7 @@
         }
 
         .send-btn:hover {
-            background: #ff5533;
+            background: #16a34a;
         }
 
         .send-btn:disabled {
