@@ -558,7 +558,12 @@
 
             <div class="section-label">Your name</div>
             <div class="form-group">
-                <input type="text" id="username" placeholder="Optional">
+                <input type="text" id="username" placeholder="What should I call you?">
+            </div>
+
+            <div class="section-label">Name your buddy</div>
+            <div class="form-group">
+                <input type="text" id="buddyName" placeholder="Sage, Max, Luna, etc.">
             </div>
 
             <div class="section-label">Personality</div>
@@ -673,9 +678,11 @@
 
         function startChat() {
             const name = document.getElementById('username').value.trim() || 'Friend';
+            const buddyName = document.getElementById('buddyName').value.trim() || 'Buddy';
             user = {
                 userId: 'v_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4),
                 username: name,
+                buddyName: buddyName,
                 personality: personality,
                 voice: voice,
                 guest: true,
@@ -689,6 +696,7 @@
 
         async function createAccount() {
             const name = document.getElementById('username').value.trim() || 'Friend';
+            const buddyName = document.getElementById('buddyName').value.trim() || 'Buddy';
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
 
@@ -703,10 +711,12 @@
                 user = accounts[email];
                 user.personality = personality;
                 user.voice = voice;
+                user.buddyName = buddyName;
             } else {
                 user = {
                     userId: email.replace(/[^a-z0-9]/gi, '_') + '_' + Date.now().toString(36),
                     username: name,
+                    buddyName: buddyName,
                     email: email,
                     hash: hash,
                     personality: personality,
@@ -766,7 +776,7 @@
 
             const avatars = { friendly: '😊', professional: '💼', playful: '🎮', wise: '🦉' };
             document.getElementById('botAvatar').textContent = avatars[user.personality] || '🤖';
-            document.getElementById('botName').textContent = user.username === 'Friend' ? 'Buddy' : `${user.username}'s Buddy`;
+            document.getElementById('botName').textContent = user.buddyName || 'Buddy';
 
             loadMemories();
         }
@@ -781,11 +791,12 @@
 
         function defaultGreet() {
             const n = user.username || 'there';
+            const b = user.buddyName || 'Buddy';
             const g = {
-                friendly: `Hey ${n}! Ready to chat. I'll remember everything.`,
-                professional: `Hello ${n}. How can I assist you today?`,
-                playful: `${n}! Let's have some fun! What's up?`,
-                wise: `Greetings ${n}. What shall we explore today?`
+                friendly: `Hey ${n}! I'm ${b}. Ready to chat and I'll remember everything we talk about.`,
+                professional: `Hello ${n}. I'm ${b}, your assistant. How can I help you today?`,
+                playful: `${n}! I'm ${b}! Let's have some fun! What's up?`,
+                wise: `Greetings ${n}. I am ${b}. What shall we explore together today?`
             };
             return g[user.personality] || g.friendly;
         }
