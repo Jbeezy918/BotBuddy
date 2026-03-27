@@ -186,6 +186,7 @@
         .chat-header-right {
             display: flex;
             gap: 15px;
+            align-items: center;
         }
 
         .header-btn {
@@ -201,6 +202,25 @@
 
         .header-btn:hover {
             background: rgba(255,255,255,0.2);
+        }
+
+        .voice-btn {
+            background: rgba(233, 69, 96, 0.3);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .voice-btn.active {
+            background: rgba(233, 69, 96, 0.8);
+        }
+
+        .voice-btn:hover {
+            background: rgba(233, 69, 96, 0.6);
         }
 
         .chat-messages {
@@ -404,6 +424,7 @@
             </div>
             <div class="chat-header-right">
                 <span class="memory-badge" id="memoryCount">0 memories</span>
+                <button class="voice-btn active" id="voiceBtn" onclick="toggleVoice()" title="Toggle voice">🔊</button>
                 <button class="header-btn" onclick="showImport()">📥 Import</button>
                 <button class="header-btn" onclick="logout()">Logout</button>
             </div>
@@ -436,6 +457,55 @@
         const API_BASE = window.location.origin;
         let currentUser = null;
         let conversationId = null;
+        let voiceEnabled = true;
+
+        // Text-to-speech
+        function speak(text) {
+            if (!voiceEnabled || !window.speechSynthesis) return;
+
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // Try to use a nice voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Microsoft'));
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Toggle voice on/off
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const btn = document.getElementById('voiceBtn');
+            btn.textContent = voiceEnabled ? '🔊' : '🔇';
+            btn.classList.toggle('active', voiceEnabled);
+
+            if (!voiceEnabled) {
+                window.speechSynthesis.cancel();
+            }
+
+            // Save preference
+            localStorage.setItem('robobuddy_voice', voiceEnabled ? 'on' : 'off');
+        }
+
+        // Load voice preference
+        function loadVoicePreference() {
+            const saved = localStorage.getItem('robobuddy_voice');
+            if (saved === 'off') {
+                voiceEnabled = false;
+                const btn = document.getElementById('voiceBtn');
+                if (btn) {
+                    btn.textContent = '🔇';
+                    btn.classList.remove('active');
+                }
+            }
+        }
 
         // Check if user exists
         function checkAuth() {
@@ -509,6 +579,11 @@
 
             messages.appendChild(msgDiv);
             messages.scrollTop = messages.scrollHeight;
+
+            // Speak bot messages
+            if (type === 'bot') {
+                speak(text);
+            }
         }
 
         // Send message
@@ -591,6 +666,12 @@
         }
 
         // Init
+        loadVoicePreference();
+        // Load voices (needed for some browsers)
+        if (window.speechSynthesis) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        }
         checkAuth();
     </script>
 </body>
