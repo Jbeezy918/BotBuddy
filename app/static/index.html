@@ -13,17 +13,13 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: #0a0a0f;
+            background-image:
+                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(120, 0, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 180, 255, 0.05) 0%, transparent 70%);
             min-height: 100vh;
             color: #f5f5f5;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
 
         /* Setup Screen */
@@ -53,114 +49,186 @@
         }
 
         .mascot {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 140px;
             margin: 0 auto 24px;
             position: relative;
         }
 
-        .mascot-core {
+        .robot-head {
             width: 100px;
-            height: 100px;
+            height: 80px;
+            background: linear-gradient(180deg, #1a1a2a 0%, #12121a 100%);
+            border-radius: 20px 20px 30px 30px;
             position: relative;
+            margin: 0 auto;
+            border: 2px solid #00d4aa;
+            box-shadow:
+                0 0 20px rgba(0, 212, 170, 0.3),
+                inset 0 -10px 20px rgba(0,0,0,0.3);
         }
 
-        .mascot-ring {
+        .robot-antenna {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid transparent;
-            border-top-color: #ff6b35;
-            border-right-color: #f7c531;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #00d4aa, #0088ff);
+            border-radius: 2px;
+        }
+
+        .robot-antenna::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -6px;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #00ffcc 0%, #00d4aa 50%, transparent 70%);
             border-radius: 50%;
-            animation: spin 3s linear infinite;
+            animation: antennaPulse 1.5s ease-in-out infinite;
         }
 
-        .mascot-ring-inner {
+        @keyframes antennaPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .robot-visor {
             position: absolute;
-            top: 10px;
+            top: 20px;
             left: 10px;
-            width: calc(100% - 20px);
-            height: calc(100% - 20px);
-            border: 2px solid transparent;
-            border-bottom-color: #ff6b35;
-            border-left-color: #f7c531;
-            border-radius: 50%;
-            animation: spin 2s linear infinite reverse;
+            right: 10px;
+            height: 28px;
+            background: linear-gradient(180deg, #0a0a12 0%, #151520 100%);
+            border-radius: 6px;
+            border: 1px solid #00d4aa;
+            overflow: hidden;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .mascot-face {
+        .robot-eyes {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 50%;
-            box-shadow: 0 0 30px rgba(255, 107, 53, 0.3), inset 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            gap: 20px;
         }
 
-        .mascot-eyes {
+        .robot-eye {
+            width: 16px;
+            height: 16px;
+            background: #00ffcc;
+            border-radius: 3px;
+            animation: eyeScan 3s ease-in-out infinite;
+            box-shadow: 0 0 15px #00ffcc, 0 0 30px rgba(0, 255, 204, 0.5);
+        }
+
+        .robot-eye::after {
+            content: '';
             position: absolute;
-            top: 20px;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 2px;
+            top: 3px;
+            left: 3px;
+            opacity: 0.8;
+        }
+
+        @keyframes eyeScan {
+            0%, 100% { opacity: 1; }
+            10% { opacity: 0.3; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            90% { opacity: 0.3; }
+        }
+
+        .robot-visor-line {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.3), transparent);
+            animation: scanLine 2s linear infinite;
+        }
+
+        @keyframes scanLine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+
+        .robot-mouth {
+            position: absolute;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 14px;
+            gap: 3px;
         }
 
-        .eye {
-            width: 10px;
-            height: 10px;
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
-            border-radius: 50%;
-            animation: eyeGlow 2s ease-in-out infinite;
-            box-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+        .robot-mouth span {
+            width: 8px;
+            height: 4px;
+            background: #00d4aa;
+            border-radius: 1px;
+            animation: mouthPulse 1s ease-in-out infinite;
         }
 
-        @keyframes eyeGlow {
-            0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(255, 107, 53, 0.8); }
-            50% { opacity: 0.7; box-shadow: 0 0 20px rgba(247, 197, 49, 0.8); }
+        .robot-mouth span:nth-child(2) { animation-delay: 0.1s; height: 6px; }
+        .robot-mouth span:nth-child(3) { animation-delay: 0.2s; }
+        .robot-mouth span:nth-child(4) { animation-delay: 0.3s; height: 6px; }
+        .robot-mouth span:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes mouthPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        .mascot-mouth {
+        .robot-neck {
+            width: 30px;
+            height: 15px;
+            background: linear-gradient(180deg, #1a1a2a, #0f0f18);
+            margin: 0 auto;
+            border-left: 2px solid #00d4aa;
+            border-right: 2px solid #00d4aa;
+        }
+
+        .robot-body {
+            width: 70px;
+            height: 35px;
+            background: linear-gradient(180deg, #1a1a2a 0%, #12121a 100%);
+            border-radius: 10px 10px 20px 20px;
+            margin: 0 auto;
+            border: 2px solid #00d4aa;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 212, 170, 0.2);
+        }
+
+        .robot-chest-light {
             position: absolute;
-            bottom: 16px;
+            top: 8px;
             left: 50%;
             transform: translateX(-50%);
             width: 20px;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b35, #f7c531);
-            border-radius: 2px;
-            box-shadow: 0 0 8px rgba(255, 107, 53, 0.5);
+            height: 20px;
+            background: radial-gradient(circle, #00ffcc 0%, #00d4aa 40%, transparent 70%);
+            border-radius: 50%;
+            animation: chestPulse 2s ease-in-out infinite;
         }
 
-        .mascot-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(255,107,53,0.15) 0%, transparent 70%);
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        @keyframes chestPulse {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
         }
 
         .logo h1 {
             font-size: 32px;
             font-weight: 700;
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
+            background: linear-gradient(135deg, #00ffcc, #00aaff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
@@ -198,7 +266,7 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #ff6b35;
+            border-color: #00d4aa;
         }
 
         .form-group input::placeholder {
@@ -228,8 +296,8 @@
         }
 
         .select-btn.selected {
-            border-color: #ff6b35;
-            background: rgba(255, 107, 53, 0.15);
+            border-color: #00d4aa;
+            background: rgba(0, 212, 170, 0.15);
         }
 
         .select-btn .emoji {
@@ -243,7 +311,7 @@
         }
 
         .select-btn.selected .name {
-            color: #ff6b35;
+            color: #00d4aa;
         }
 
         /* Buttons */
@@ -255,16 +323,16 @@
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
-            color: #fff;
+            background: linear-gradient(135deg, #00d4aa, #00aaff);
+            color: #0a0a0f;
             transition: all 0.3s;
             margin-top: 8px;
-            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
         }
 
         .btn-start:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
+            box-shadow: 0 8px 30px rgba(0, 212, 170, 0.5);
         }
 
         .divider {
@@ -301,8 +369,8 @@
         }
 
         .btn-account:hover {
-            border-color: #ff6b35;
-            color: #ff6b35;
+            border-color: #00d4aa;
+            color: #00d4aa;
         }
 
         /* Chat Screen */
@@ -310,9 +378,10 @@
             display: none;
             flex-direction: column;
             height: 100vh;
-            background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: #0a0a0f;
+            background-image:
+                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(120, 0, 255, 0.08) 0%, transparent 50%);
         }
 
         .chat-header {
@@ -335,7 +404,7 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
+            background: linear-gradient(135deg, #00d4aa, #00aaff);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -350,7 +419,7 @@
 
         .chat-header-info p {
             font-size: 12px;
-            color: #ff6b35;
+            color: #00d4aa;
         }
 
         .chat-header-right {
@@ -380,13 +449,13 @@
         }
 
         .icon-btn.active {
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
-            color: #fff;
+            background: linear-gradient(135deg, #00d4aa, #00aaff);
+            color: #0a0a0f;
         }
 
         .memory-count {
-            background: rgba(255, 107, 53, 0.2);
-            color: #ff6b35;
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
             padding: 8px 14px;
             border-radius: 8px;
             font-size: 13px;
@@ -416,8 +485,8 @@
         }
 
         .message-user {
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
-            color: #fff;
+            background: linear-gradient(135deg, #00d4aa, #00aaff);
+            color: #0a0a0f;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
@@ -449,7 +518,7 @@
             display: inline-block;
             width: 6px;
             height: 6px;
-            background: #ff6b35;
+            background: #00d4aa;
             border-radius: 50%;
             margin-right: 4px;
             animation: typingPulse 1.2s infinite;
@@ -496,25 +565,25 @@
 
         .chat-input:focus {
             outline: none;
-            border-color: #ff6b35;
+            border-color: #00d4aa;
         }
 
         .send-btn {
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ff6b35, #f7c531);
+            background: linear-gradient(135deg, #00d4aa, #00aaff);
             border: none;
-            color: #fff;
+            color: #0a0a0f;
             cursor: pointer;
             font-size: 18px;
             transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
         }
 
         .send-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 212, 170, 0.4);
         }
 
         .send-btn:disabled {
@@ -539,17 +608,22 @@
         <div class="setup-box">
             <div class="logo">
                 <div class="mascot">
-                    <div class="mascot-glow"></div>
-                    <div class="mascot-core">
-                        <div class="mascot-ring"></div>
-                        <div class="mascot-ring-inner"></div>
-                        <div class="mascot-face">
-                            <div class="mascot-eyes">
-                                <div class="eye"></div>
-                                <div class="eye"></div>
+                    <div class="robot-head">
+                        <div class="robot-antenna"></div>
+                        <div class="robot-visor">
+                            <div class="robot-visor-line"></div>
+                            <div class="robot-eyes">
+                                <div class="robot-eye"></div>
+                                <div class="robot-eye"></div>
                             </div>
-                            <div class="mascot-mouth"></div>
                         </div>
+                        <div class="robot-mouth">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div class="robot-neck"></div>
+                    <div class="robot-body">
+                        <div class="robot-chest-light"></div>
                     </div>
                 </div>
                 <h1>RoboBuddy</h1>
